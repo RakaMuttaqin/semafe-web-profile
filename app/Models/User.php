@@ -17,6 +17,13 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $fillable = ['role_id', 'name', 'email', 'password'];
+
+    public function roles()
+    {
+        $this->hasOne(Role::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
