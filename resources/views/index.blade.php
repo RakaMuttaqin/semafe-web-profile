@@ -3,6 +3,36 @@
 @section('title', 'Dashboard')
 
 @section('content')
+@php
+$newMembers = [
+    ['name' => 'Andi Pratama', 'nim' => '230101', 'divisi' => 'Humas', 'divisi_color' => 'bg-indigo-100 text-indigo-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=128'],
+    ['name' => 'Siti Rahma', 'nim' => '230105', 'divisi' => 'Media', 'divisi_color' => 'bg-purple-100 text-purple-700', 'position' => 'Koordinator', 'photo' => 'https://ui-avatars.com/api/?name=Siti+Rahma&background=a855f7&color=fff&size=128'],
+    ['name' => 'Budi Santoso', 'nim' => '230108', 'divisi' => 'Kegiatan', 'divisi_color' => 'bg-orange-100 text-orange-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Budi+Santoso&background=f97316&color=fff&size=128'],
+    ['name' => 'Dewi Lestari', 'nim' => '230112', 'divisi' => 'Danus', 'divisi_color' => 'bg-green-100 text-green-700', 'position' => 'Staff', 'photo' => 'https://ui-avatars.com/api/?name=Dewi+Lestari&background=22c55e&color=fff&size=128'],
+    ['name' => 'Rizki Maulana', 'nim' => '230115', 'divisi' => 'PSDM', 'divisi_color' => 'bg-blue-100 text-blue-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Rizki+Maulana&background=3b82f6&color=fff&size=128'],
+];
+
+$divisiStats = [
+    ['name' => 'Humas', 'count' => 28, 'percent' => 22],
+    ['name' => 'Media', 'count' => 22, 'percent' => 17],
+    ['name' => 'Kegiatan', 'count' => 35, 'percent' => 28],
+    ['name' => 'Danus', 'count' => 18, 'percent' => 14],
+    ['name' => 'PSDM', 'count' => 24, 'percent' => 19],
+];
+
+$upcomingEvents = [
+    ['day' => '15', 'month' => 'DEC', 'title' => 'Rapat Koordinasi Bulanan', 'divisi' => 'Semua Divisi', 'time' => '19:00 WIB'],
+    ['day' => '20', 'month' => 'DEC', 'title' => 'Workshop Desain Grafis', 'divisi' => 'Media', 'time' => '14:00 WIB'],
+    ['day' => '25', 'month' => 'DEC', 'title' => 'Bakti Sosial Akhir Tahun', 'divisi' => 'Kegiatan', 'time' => '08:00 WIB'],
+];
+
+$announcements = [
+    ['title' => 'Pendaftaran Anggota Baru Dibuka', 'content' => 'Pendaftaran periode Januari 2027 dibuka mulai 1 Januari. Silakan hubungi divisi PSDM.', 'date' => '10 Des 2026'],
+    ['title' => 'Jadwal Rapat Mingguan Diperbarui', 'content' => 'Rapat koor bergeser ke hari Rabu pukul 19:00 WIB efektif minggu depan.', 'date' => '8 Des 2026'],
+    ['title' => 'Pengumpulan Laporan Bulanan', 'content' => 'Batas pengumpulan laporan divisi tanggal 28 setiap bulan. Diharapkan tepat waktu.', 'date' => '5 Des 2026'],
+];
+@endphp
+
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Selamat Datang, Admin</h2>
         <p class="text-sm text-gray-500">Ringkasan organisasi SEMAFE — {{ now()->translatedFormat('d F Y') }}</p>
@@ -120,7 +150,7 @@
                     <li>
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-sm font-medium text-gray-700">{{ $d['name'] }}</span>
-                            <span class="text-sm text-gray-500">{{ $d['count' }} anggota</span>
+                            <span class="text-sm text-gray-500">{{ $d['count'] }} anggota</span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-2">
                             <div class="bg-indigo-500 h-2 rounded-full transition-all" style="width: {{ $d['percent'] }}%"></div>
@@ -164,33 +194,3 @@
         </div>
     </div>
 @endsection
-
-@php
-$newMembers = [
-    ['name' => 'Andi Pratama', 'nim' => '230101', 'divisi' => 'Humas', 'divisi_color' => 'bg-indigo-100 text-indigo-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=128'],
-    ['name' => 'Siti Rahma', 'nim' => '230105', 'divisi' => 'Media', 'divisi_color' => 'bg-purple-100 text-purple-700', 'position' => 'Koordinator', 'photo' => 'https://ui-avatars.com/api/?name=Siti+Rahma&background=a855f7&color=fff&size=128'],
-    ['name' => 'Budi Santoso', 'nim' => '230108', 'divisi' => 'Kegiatan', 'divisi_color' => 'bg-orange-100 text-orange-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Budi+Santoso&background=f97316&color=fff&size=128'],
-    ['name' => 'Dewi Lestari', 'nim' => '230112', 'divisi' => 'Danus', 'divisi_color' => 'bg-green-100 text-green-700', 'position' => 'Staff', 'photo' => 'https://ui-avatars.com/api/?name=Dewi+Lestari&background=22c55e&color=fff&size=128'],
-    ['name' => 'Rizki Maulana', 'nim' => '230115', 'divisi' => 'PSDM', 'divisi_color' => 'bg-blue-100 text-blue-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Rizki+Maulana&background=3b82f6&color=fff&size=128'],
-];
-
-$divisiStats = [
-    ['name' => 'Humas', 'count' => 28, 'percent' => 22],
-    ['name' => 'Media', 'count' => 22, 'percent' => 17],
-    ['name' => 'Kegiatan', 'count' => 35, 'percent' => 28],
-    ['name' => 'Danus', 'count' => 18, 'percent' => 14],
-    ['name' => 'PSDM', 'count' => 24, 'percent' => 19],
-];
-
-$upcomingEvents = [
-    ['day' => '15', 'month' => 'DEC', 'title' => 'Rapat Koordinasi Bulanan', 'divisi' => 'Semua Divisi', 'time' => '19:00 WIB'],
-    ['day' => '20', 'month' => 'DEC', 'title' => 'Workshop Desain Grafis', 'divisi' => 'Media', 'time' => '14:00 WIB'],
-    ['day' => '25', 'month' => 'DEC', 'title' => 'Bakti Sosial Akhir Tahun', 'divisi' => 'Kegiatan', 'time' => '08:00 WIB'],
-];
-
-$announcements = [
-    ['title' => 'Pendaftaran Anggota Baru Dibuka', 'content' => 'Pendaftaran periode Januari 2027 dibuka mulai 1 Januari. Silakan hubungi divisi PSDM.', 'date' => '10 Des 2026'],
-    ['title' => 'Jadwal Rapat Mingguan Diperbarui', 'content' => 'Rapat koor bergeser ke hari Rabu pukul 19:00 WIB efektif minggu depan.', 'date' => '8 Des 2026'],
-    ['title' => 'Pengumpulan Laporan Bulanan', 'content' => 'Batas pengumpulan laporan divisi tanggal 28 setiap bulan. Diharapkan tepat waktu.', 'date' => '5 Des 2026'],
-];
-@endphp
