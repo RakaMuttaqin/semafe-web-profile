@@ -6,7 +6,7 @@
             <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <span class="text-xl font-bold">{{ config('app.name', 'Laravel') }}</span>
+            <span class="text-xl font-bold">SEMAFE</span>
         </a>
 
         <!-- Close button (mobile) -->
