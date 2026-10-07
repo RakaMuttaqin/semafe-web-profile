@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('division_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('division_id')->constrained('divisions')->restrictOnDelete();
             $table->integer('nim')->unique();
             $table->string('name');
-            $table->string('position');
-            $table->string('photos');
+            $table->string('position')->nullable();
+            $table->string('photos')->nullable();
+            $table->text('bio')->nullable();
+            $table->enum('status', ['active', 'inactive', 'demisioner', 'resigned'])->default('active');
             $table->timestamps();
         });
     }
