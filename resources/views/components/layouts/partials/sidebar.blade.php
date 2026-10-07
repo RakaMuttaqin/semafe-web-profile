@@ -36,7 +36,7 @@
         <!-- Section: Main -->
         <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Main</p>
 
-        <a href="{{ url('/') }}"
+        <a href="{{ url('dashboard') }}"
             class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
                   {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@
             Profile
         </a>
 
-        <form method="POST" action="#">
+        <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
                 class="w-full flex items-center px-3 py-2.5 text-sm font-medium text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
