@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -12,7 +14,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::with('role')->get();
+        $roles = Role::all();
+        // dd($users);
+
+        return view('user.index', compact('users', 'roles'));
     }
 
     /**
@@ -28,26 +34,23 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // 'name' => $request['name'],
-        // 'email' => $request['email'],
-        // 'role_id' => $request['role_id'],
-        // 'password' => $request['password'],
-        // 'passwordConfirmation' => $request['passwordConfirmation'],
-
         $validatedData = $request->validate([
             'name' => 'required|string',
             'email' => 'required|string',
-            'role_id' => 'nullable',
-            'password' => 'required',
-            'passwordConfirmation' => 'required|confirmed',
+            'role_id' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        User::create([
+        $users = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => $validatedData['password'],
-            'passwordConfirmation' => $validatedData['passwordConfirmation'],
+            'role_id' => $validatedData['role_id'],
+            'password' => Hash::make($validatedData['password']),
         ]);
+
+        // dd($users);
+        return redirect('user')->with('success', 'Data Berhasil Ditambahkan.');
+
     }
 
     /**
@@ -71,21 +74,30 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = User::findOrFail($id);
         $validatedData = $request->validate([
-            'name' => 'string',
-            'email' => 'string',
-            'role' => 'string',
-            'password' => 'string',
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'role_id' => 'required|exists:roles,id',
+            'password' => 'nullable|string|min:8',
+            'status' => 'required|in:active,inactive',
         ]);
 
-        $user->update([
+        $user = User::findOrFail($id);
+
+        $data = [
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'role_id' => $validatedData['role_id'],
-            'password' => $validatedData['password'],
-        ]);
+            'status' => $validatedData['status'],
+        ];
 
+        if (! empty($validatedData['password'])) {
+            $data['password'] = Hash::make($validatedData['password']);
+        }
+
+        $user->update($data);
+
+        return redirect('user')->with('success', 'Data Berhasil Diubah.');
     }
 
     /**
@@ -95,5 +107,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->destroy();
+
+        return redirect('user')->with('success', 'Data Berhasil Dihapus.');
     }
 }

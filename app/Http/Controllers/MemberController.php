@@ -62,7 +62,7 @@ class MemberController extends Controller
     public function update(UpdateMemberRequest $request, Member $member)
     {
         $validatedData = $request->validated();
-        Member::findOrFail($member)->update([
+        Member::findOrFail($member->id)->update([
             'nim' => $validatedData['nim'],
             'name' => $validatedData['name'],
             'division_id' => $validatedData['division_id'],
@@ -76,6 +76,6 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        Member::findOrFail($member)->destroy();
+        Member::findOrFail($member->id)->destroy();
     }
 }

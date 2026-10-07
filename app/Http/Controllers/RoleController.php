@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
+use App\Models\User;
 
 class RoleController extends Controller
 {
@@ -13,7 +14,11 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::with('role')->get();
+        $roles = Role::with('users')->get();
+        // dd($users->where('role_id', 3)->count());
+// dd($roles->where('users.id', 1)->count());
+        return view('role.index', compact('roles', 'users'));
     }
 
     /**
@@ -35,6 +40,8 @@ class RoleController extends Controller
             'name' => $validatedData['name'],
             'slug' => $validatedData['slug'],
         ]);
+
+        return redirect('role')->with('success', 'Data Berhasil Ditambahkan.');
     }
 
     /**
@@ -59,10 +66,14 @@ class RoleController extends Controller
     public function update(UpdateRoleRequest $request, Role $role)
     {
         $validatedData = $request->validated();
-        Role::findOrFail($role)->update([
+        $roles = Role::findOrFail($role->id);
+
+        $roles->update([
             'name' => $validatedData['name'],
             'slug' => $validatedData['slug'],
         ]);
+
+        return redirect('role')->with('success', 'Data Berhasil Ditambahkan');
     }
 
     /**
@@ -70,6 +81,6 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        Role::findOrFail($role)->destroy();
+        Role::findOrFail($role->id)->destroy();
     }
 }

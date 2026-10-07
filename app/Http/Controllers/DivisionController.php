@@ -13,7 +13,9 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        //
+        $divisions = Division::with('members')->get();
+
+        return view('division.index', compact('divisions'));
     }
 
     /**
@@ -34,6 +36,8 @@ class DivisionController extends Controller
             'name' => $validatedData['name'],
             'slug' => $validatedData['slug'],
         ]);
+
+        return redirect('division')->with('success', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -58,12 +62,14 @@ class DivisionController extends Controller
     public function update(UpdateDivisionRequest $request, Division $division)
     {
         $validatedData = $request->validated();
-        $divisions = Division::findOrFail($division);
+        $divisions = Division::findOrFail($division->id);
 
         $divisions->update([
             'name' => $validatedData['name'],
             'slug' => $validatedData['slug'],
         ]);
+
+        return redirect('division')->with('success', 'Data berhasil diubah.');
     }
 
     /**
@@ -71,7 +77,8 @@ class DivisionController extends Controller
      */
     public function destroy(Division $division)
     {
-        Division::findOrFail($division)->delete();
+        Division::findOrFail($division->id)->destroy();
 
+        return redirect('division')->with('success', 'Data berhasil dihapus.');
     }
 }
