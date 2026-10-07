@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -15,13 +16,18 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
-    protected $fillable = ['role_id', 'name', 'email', 'password'];
+    protected $fillable = ['role_id', 'name', 'email', 'password', 'status'];
 
-    public function roles()
+    public function role()
     {
-        $this->hasOne(Role::class);
+        return $this->belongsTo(Role::class);
+    }
+
+    public function news()
+    {
+        return $this->hasMany(News::class);
     }
 
     /**
