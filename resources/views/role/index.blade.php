@@ -3,6 +3,16 @@
 @section('title', 'Peran')
 
 @section('content')
+@php
+    $users = $users ?? [
+        (object)['id' => 1, 'name' => 'Admin SEMAFE'],
+        (object)['id' => 2, 'name' => 'Ketua'],
+    ];
+    $roles = $roles ?? [
+        (object)['id' => 1, 'name' => 'Admin', 'slug' => 'admin', 'description' => 'Akses penuh', 'user_count' => 2],
+        (object)['id' => 2, 'name' => 'Koordinator', 'slug' => 'koordinator', 'description' => 'Kelola divisi', 'user_count' => 8],
+    ];
+@endphp
     <div x-data="roleTable">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Peran</h2>
@@ -78,7 +88,7 @@
             style="display:none" x-transition.opacity>
             <div class="w-full max-w-md p-6 bg-white rounded-xl shadow-lg" @click.away="openInsert = false">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Tambah Peran</h3>
-                <form :action="'role/store/'" method="POST" class="space-y-4">
+                <form action="{{ route('role.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm text-gray-600 mb-1">Nama Peran</label>
@@ -105,7 +115,7 @@
             x-transition.opacity>
             <div class="w-full max-w-md p-6 bg-white rounded-xl shadow-lg" @click.away="openEdit = false">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Edit Peran</h3>
-                <form :action="'role/update/' + selected.id" method="POST" class="space-y-4">
+                <form :action="'/role/update/' + selected.id" method="POST" class="space-y-4">
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="id" :value="selected.id">

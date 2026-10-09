@@ -3,35 +3,100 @@
 @section('title', 'Dashboard')
 
 @section('content')
-@php
-$newMembers = [
-    ['name' => 'Andi Pratama', 'nim' => '230101', 'divisi' => 'Humas', 'divisi_color' => 'bg-indigo-100 text-indigo-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=128'],
-    ['name' => 'Siti Rahma', 'nim' => '230105', 'divisi' => 'Media', 'divisi_color' => 'bg-purple-100 text-purple-700', 'position' => 'Koordinator', 'photo' => 'https://ui-avatars.com/api/?name=Siti+Rahma&background=a855f7&color=fff&size=128'],
-    ['name' => 'Budi Santoso', 'nim' => '230108', 'divisi' => 'Kegiatan', 'divisi_color' => 'bg-orange-100 text-orange-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Budi+Santoso&background=f97316&color=fff&size=128'],
-    ['name' => 'Dewi Lestari', 'nim' => '230112', 'divisi' => 'Danus', 'divisi_color' => 'bg-green-100 text-green-700', 'position' => 'Staff', 'photo' => 'https://ui-avatars.com/api/?name=Dewi+Lestari&background=22c55e&color=fff&size=128'],
-    ['name' => 'Rizki Maulana', 'nim' => '230115', 'divisi' => 'PSDM', 'divisi_color' => 'bg-blue-100 text-blue-700', 'position' => 'Anggota', 'photo' => 'https://ui-avatars.com/api/?name=Rizki+Maulana&background=3b82f6&color=fff&size=128'],
-];
+    @php
+        $newMembers = [
+            [
+                'name' => 'Andi Pratama',
+                'nim' => '230101',
+                'divisi' => 'Humas',
+                'divisi_color' => 'bg-indigo-100 text-indigo-700',
+                'position' => 'Anggota',
+                'photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=128',
+            ],
+            [
+                'name' => 'Siti Rahma',
+                'nim' => '230105',
+                'divisi' => 'Media',
+                'divisi_color' => 'bg-purple-100 text-purple-700',
+                'position' => 'Koordinator',
+                'photo' => 'https://ui-avatars.com/api/?name=Siti+Rahma&background=a855f7&color=fff&size=128',
+            ],
+            [
+                'name' => 'Budi Santoso',
+                'nim' => '230108',
+                'divisi' => 'Kegiatan',
+                'divisi_color' => 'bg-orange-100 text-orange-700',
+                'position' => 'Anggota',
+                'photo' => 'https://ui-avatars.com/api/?name=Budi+Santoso&background=f97316&color=fff&size=128',
+            ],
+            [
+                'name' => 'Dewi Lestari',
+                'nim' => '230112',
+                'divisi' => 'Danus',
+                'divisi_color' => 'bg-green-100 text-green-700',
+                'position' => 'Staff',
+                'photo' => 'https://ui-avatars.com/api/?name=Dewi+Lestari&background=22c55e&color=fff&size=128',
+            ],
+            [
+                'name' => 'Rizki Maulana',
+                'nim' => '230115',
+                'divisi' => 'PSDM',
+                'divisi_color' => 'bg-blue-100 text-blue-700',
+                'position' => 'Anggota',
+                'photo' => 'https://ui-avatars.com/api/?name=Rizki+Maulana&background=3b82f6&color=fff&size=128',
+            ],
+        ];
 
-$divisiStats = [
-    ['name' => 'Humas', 'count' => 28, 'percent' => 22],
-    ['name' => 'Media', 'count' => 22, 'percent' => 17],
-    ['name' => 'Kegiatan', 'count' => 35, 'percent' => 28],
-    ['name' => 'Danus', 'count' => 18, 'percent' => 14],
-    ['name' => 'PSDM', 'count' => 24, 'percent' => 19],
-];
+        $divisiStats = [
+            ['name' => 'Humas', 'count' => 28, 'percent' => 22],
+            ['name' => 'Media', 'count' => 22, 'percent' => 17],
+            ['name' => 'Kegiatan', 'count' => 35, 'percent' => 28],
+            ['name' => 'Danus', 'count' => 18, 'percent' => 14],
+            ['name' => 'PSDM', 'count' => 24, 'percent' => 19],
+        ];
 
-$upcomingEvents = [
-    ['day' => '15', 'month' => 'DEC', 'title' => 'Rapat Koordinasi Bulanan', 'divisi' => 'Semua Divisi', 'time' => '19:00 WIB'],
-    ['day' => '20', 'month' => 'DEC', 'title' => 'Workshop Desain Grafis', 'divisi' => 'Media', 'time' => '14:00 WIB'],
-    ['day' => '25', 'month' => 'DEC', 'title' => 'Bakti Sosial Akhir Tahun', 'divisi' => 'Kegiatan', 'time' => '08:00 WIB'],
-];
+        $upcomingEvents = [
+            [
+                'day' => '15',
+                'month' => 'DEC',
+                'title' => 'Rapat Koordinasi Bulanan',
+                'divisi' => 'Semua Divisi',
+                'time' => '19:00 WIB',
+            ],
+            [
+                'day' => '20',
+                'month' => 'DEC',
+                'title' => 'Workshop Desain Grafis',
+                'divisi' => 'Media',
+                'time' => '14:00 WIB',
+            ],
+            [
+                'day' => '25',
+                'month' => 'DEC',
+                'title' => 'Bakti Sosial Akhir Tahun',
+                'divisi' => 'Kegiatan',
+                'time' => '08:00 WIB',
+            ],
+        ];
 
-$announcements = [
-    ['title' => 'Pendaftaran Anggota Baru Dibuka', 'content' => 'Pendaftaran periode Januari 2027 dibuka mulai 1 Januari. Silakan hubungi divisi PSDM.', 'date' => '10 Des 2026'],
-    ['title' => 'Jadwal Rapat Mingguan Diperbarui', 'content' => 'Rapat koor bergeser ke hari Rabu pukul 19:00 WIB efektif minggu depan.', 'date' => '8 Des 2026'],
-    ['title' => 'Pengumpulan Laporan Bulanan', 'content' => 'Batas pengumpulan laporan divisi tanggal 28 setiap bulan. Diharapkan tepat waktu.', 'date' => '5 Des 2026'],
-];
-@endphp
+        $announcements = [
+            [
+                'title' => 'Pendaftaran Anggota Baru Dibuka',
+                'content' => 'Pendaftaran periode Januari 2027 dibuka mulai 1 Januari. Silakan hubungi divisi PSDM.',
+                'date' => '10 Des 2026',
+            ],
+            [
+                'title' => 'Jadwal Rapat Mingguan Diperbarui',
+                'content' => 'Rapat koor bergeser ke hari Rabu pukul 19:00 WIB efektif minggu depan.',
+                'date' => '8 Des 2026',
+            ],
+            [
+                'title' => 'Pengumpulan Laporan Bulanan',
+                'content' => 'Batas pengumpulan laporan divisi tanggal 28 setiap bulan. Diharapkan tepat waktu.',
+                'date' => '5 Des 2026',
+            ],
+        ];
+    @endphp
 
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Selamat Datang, Admin</h2>
@@ -45,13 +110,17 @@ $announcements = [
                     <p class="text-sm font-medium text-gray-500">Total Anggota</p>
                     <p class="text-3xl font-bold text-gray-900 mt-1">127</p>
                     <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
                         +12% dari bulan lalu
                     </p>
                 </div>
                 <div class="p-4 bg-indigo-50 rounded-xl">
                     <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
             </div>
@@ -66,7 +135,8 @@ $announcements = [
                 </div>
                 <div class="p-4 bg-green-50 rounded-xl">
                     <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                 </div>
             </div>
@@ -81,7 +151,8 @@ $announcements = [
                 </div>
                 <div class="p-4 bg-yellow-50 rounded-xl">
                     <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                 </div>
             </div>
@@ -96,7 +167,8 @@ $announcements = [
                 </div>
                 <div class="p-4 bg-pink-50 rounded-xl">
                     <svg class="w-7 h-7 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </div>
             </div>
@@ -125,16 +197,19 @@ $announcements = [
                         @foreach ($newMembers as $m)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="py-4">
-                                    <img src="{{ $m['photo'] }}" alt="{{ $m['name'] }}" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm">
+                                    <img src="{{ $m['photo'] }}" alt="{{ $m['name'] }}"
+                                        class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm">
                                 </td>
                                 <td class="py-4 font-medium text-gray-900">{{ $m['name'] }}</td>
                                 <td class="py-4 text-gray-500">{{ $m['nim'] }}</td>
                                 <td class="py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $m['divisi_color'] }}">{{ $m['divisi'] }}</span>
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $m['divisi_color'] }}">{{ $m['divisi'] }}</span>
                                 </td>
                                 <td class="py-4 text-gray-700">{{ $m['position'] }}</td>
                                 <td class="py-4 text-right">
-                                    <button class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">Detail</button>
+                                    <button
+                                        class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">Detail</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -153,7 +228,8 @@ $announcements = [
                             <span class="text-sm text-gray-500">{{ $d['count'] }} anggota</span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-2">
-                            <div class="bg-indigo-500 h-2 rounded-full transition-all" style="width: {{ $d['percent'] }}%"></div>
+                            <div class="bg-indigo-500 h-2 rounded-full transition-all" style="width: {{ $d['percent'] }}%">
+                            </div>
                         </div>
                     </li>
                 @endforeach

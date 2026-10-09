@@ -3,6 +3,16 @@
 @section('title', 'Pengguna')
 
 @section('content')
+@php
+    $roles = $roles ?? [
+        (object)['id' => 1, 'name' => 'Admin'],
+        (object)['id' => 2, 'name' => 'Operator'],
+    ];
+    $users = $users ?? [
+        (object)['id' => 1, 'name' => 'Admin SEMAFE', 'email' => 'admin@semafe.ac.id', 'role' => (object)['name' => 'Admin'], 'role_color' => 'bg-red-100 text-red-700', 'status' => 'active', 'photo' => 'https://ui-avatars.com/api/?name=Admin+SEMAFE&background=dc2626&color=fff&size=128'],
+        (object)['id' => 2, 'name' => 'Ketua', 'email' => 'ketua@semafe.ac.id', 'role' => (object)['name' => 'Admin'], 'role_color' => 'bg-red-100 text-red-700', 'status' => 'active', 'photo' => 'https://ui-avatars.com/api/?name=Ketua&background=dc2626&color=fff&size=128'],
+    ];
+@endphp
     <div x-data="userTable">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Pengguna</h2>
@@ -139,7 +149,7 @@
             x-transition.opacity>
             <div class="w-full max-w-md p-6 bg-white rounded-xl shadow-lg" @click.away="openEdit = false">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Edit Pengguna</h3>
-                <form :action="`user/update/${selected.id}`" method="POST" class="space-y-4">
+                <form :action="'/user/update/' + selected.id" method="POST" class="space-y-4">
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="id" :value="selected.id">

@@ -3,6 +3,12 @@
 @section('title', 'Divisi')
 
 @section('content')
+@php
+    $divisions = $divisions ?? [
+        (object)['id' => 1, 'name' => 'Humas', 'slug' => 'humas', 'color' => '#6366f1', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'coordinator' => 'Andi Pratama', 'coordinator_photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=64', 'member_count' => 28],
+        (object)['id' => 2, 'name' => 'Media', 'slug' => 'media', 'color' => '#a855f7', 'icon' => 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z', 'coordinator' => 'Siti Rahma', 'coordinator_photo' => 'https://ui-avatars.com/api/?name=Siti+Rahma&background=a855f7&color=fff&size=64', 'member_count' => 22],
+    ];
+@endphp
     <div x-data="divisionTable">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Divisi</h2>
