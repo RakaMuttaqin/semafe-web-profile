@@ -47,18 +47,19 @@
     ];
 
     /* ---------- Anggota terbaru ---------- */
-    $newMembers = Member::with('divisions')
-        ->latest()
+    $divisionNames = Division::pluck('name', 'id');
+
+    $newMembers = Member::orderByDesc('id')
         ->take(5)
         ->get()
-        ->map(function ($m) use ($resolveMedia) {
+        ->map(function ($m) use ($resolveMedia, $divisionNames) {
             return [
                 'id' => $m->id,
                 'name' => $m->name,
                 'nim' => $m->nim,
                 'position' => $m->position,
-                'division' => $m->divisions?->name ?? '-',
-                'division_slug' => $m->divisions?->slug ?? '-',
+                'division' => $divisionNames[$m->division_id] ?? '-',
+                'division_id' => $m->division_id,
                 'joined' => $m->created_at?->translatedFormat('d F Y') ?? '-',
                 'photo' => $resolveMedia($m->photos, $m->name),
             ];
@@ -228,6 +229,48 @@
                 </div>
             </div>
         </a>
+    </div>
+
+    {{-- Aksi Cepat --}}
+    <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Aksi Cepat</h3>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <a href="{{ url('/admin/news') }}"
+                class="flex flex-col items-center gap-3 p-5 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors cursor-pointer group">
+                <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <span class="text-sm font-semibold text-gray-700 group-hover:text-indigo-700">Tulis Berita</span>
+            </a>
+
+            <a href="{{ url('/admin/events') }}"
+                class="flex flex-col items-center gap-3 p-5 bg-green-50 rounded-xl hover:bg-green-100 transition-colors cursor-pointer group">
+                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm font-semibold text-gray-700 group-hover:text-green-700">Tambah Kegiatan</span>
+            </a>
+
+            <a href="{{ url('/member') }}"
+                class="flex flex-col items-center gap-3 p-5 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors cursor-pointer group">
+                <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span class="text-sm font-semibold text-gray-700 group-hover:text-yellow-700">Tambah Anggota</span>
+            </a>
+
+            <a href="{{ url('/division') }}"
+                class="flex flex-col items-center gap-3 p-5 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors cursor-pointer group">
+                <svg class="w-7 h-7 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <span class="text-sm font-semibold text-gray-700 group-hover:text-pink-700">Kelola Divisi</span>
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-6 mt-6 xl:grid-cols-3">

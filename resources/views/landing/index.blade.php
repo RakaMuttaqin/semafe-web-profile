@@ -3,6 +3,29 @@
 @section('title', 'SEMAFE — Senat Mahasiswa Fakultas Ekonomi')
 
 @section('content')
+    @php
+        $newsData = \Illuminate\Support\Facades\Schema::hasTable('news')
+            ? App\Models\News::where('status', 'published')
+                ->latest('published_at')
+                ->take(4)
+                ->get()
+                ->map(function ($n) {
+                    return [
+                        'id' => $n->id,
+                        'title' => $n->title,
+                        'slug' => $n->slug,
+                        'excerpt' => Illuminate\Support\Str::limit(strip_tags($n->content), 140),
+                        'thumbnail' => $n->thumbnail ?: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=85',
+                        'date' => optional($n->published_at)->translatedFormat('d M Y') ?? '-',
+                        'status' => $n->status,
+                    ];
+                })
+            : collect();
+
+        $featuredNews = $newsData->first();
+        $newsList = $newsData->skip(1);
+    @endphp
+
     <div x-data="semafeLanding()" class="min-h-screen bg-[#FFFDF7] text-[#171717]">
         <header class="fixed inset-x-0 top-0 z-50 border-b border-[#DED9CF] bg-[#FFFDF7]">
             <nav class="mx-auto flex h-18.5 max-w-7xl items-center justify-between px-6 lg:px-8">
@@ -48,19 +71,11 @@
 
 
                     <div class="flex items-center gap-3">
-
-                        {{-- Login --}}
-                        <a href="{{ route('login') }}"
-                            class="border border-[#B91C1C] px-5 py-2.5 text-xs font-bold text-[#B91C1C] transition hover:bg-[#B91C1C] hover:text-white">
-                            Login
-                        </a>
-
                         {{-- Aspirasi --}}
                         <button @click="scrollTo('aspirasi')"
                             class="bg-[#B91C1C] px-5 py-2.5 text-xs font-bold text-white transition hover:bg-[#991B1B]">
                             Aspirasi
                         </button>
-
                     </div>
 
                 </div>
@@ -612,74 +627,74 @@
 
 
                     {{-- Featured News --}}
-                    <article class="mt-14 grid overflow-hidden bg-white lg:grid-cols-[1.2fr_0.8fr]">
+                    @if ($featuredNews)
+                        <a href="{{ url('/news/' . $featuredNews['slug']) }}"
+                            class="mt-14 grid overflow-hidden bg-white group lg:grid-cols-[1.2fr_0.8fr] transition hover:shadow-lg">
 
-                        <div class="aspect-16/10 lg:aspect-auto">
-
-                            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=85"
-                                alt="Kegiatan mahasiswa" class="h-full w-full object-cover">
-
-                        </div>
-
-
-                        <div class="flex flex-col justify-center p-8 sm:p-12">
-
-                            <div class="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.15em]">
-
-                                <span class="text-[#B91C1C]">
-                                    Kegiatan
-                                </span>
-
-                                <span class="text-gray-400">
-                                    12 Oktober 2026
-                                </span>
-
+                            <div class="aspect-16/10 lg:aspect-auto">
+                                <img src="{{ $featuredNews['thumbnail'] }}" alt="{{ $featuredNews['title'] }}"
+                                    class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]">
                             </div>
 
+                            <div class="flex flex-col justify-center p-8 sm:p-12">
 
-                            <h3 class="mt-5 text-3xl font-black leading-tight">
-                                Kegiatan terbaru SEMAFE untuk mahasiswa Fakultas Ekonomi
-                            </h3>
+                                <div class="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.15em]">
+                                    <span class="text-[#B91C1C]">
+                                        {{ $featuredNews['status'] === 'published' ? 'Berita' : ucfirst($featuredNews['status']) }}
+                                    </span>
+                                    <span class="text-gray-400">
+                                        {{ $featuredNews['date'] }}
+                                    </span>
+                                </div>
 
-
-                            <p class="mt-5 text-sm leading-7 text-gray-500">
-                                Dokumentasi dan cerita kegiatan terbaru
-                                yang dilaksanakan bersama mahasiswa.
-                            </p>
-
-
-                            <button class="mt-8 w-fit border-b-2 border-[#F4C430] pb-1 text-sm font-black">
-                                Baca selengkapnya →
-                            </button>
-
-                        </div>
-
-                    </article>
-
-
-                    {{-- News list --}}
-                    <div class="mt-8 grid border-t border-[#CEC8BC]">
-
-                        @foreach ([['Prestasi', 'Mahasiswa Fakultas Ekonomi Raih Prestasi'], ['Organisasi', 'Kolaborasi Baru Bersama Organisasi Mahasiswa'], ['Aspirasi', 'SEMAFE Membuka Ruang Aspirasi Mahasiswa']] as $news)
-                            <article
-                                class="group grid gap-4 border-b border-[#CEC8BC] py-6 sm:grid-cols-[160px_1fr_auto] sm:items-center">
-
-                                <span class="text-xs font-bold uppercase tracking-wider text-[#B91C1C]">
-                                    {{ $news[0] }}
-                                </span>
-
-                                <h3 class="font-black">
-                                    {{ $news[1] }}
+                                <h3 class="mt-5 text-3xl font-black leading-tight">
+                                    {{ $featuredNews['title'] }}
                                 </h3>
 
-                                <span
-                                    class="text-gray-400 transition group-hover:translate-x-1 group-hover:text-[#B91C1C]">
-                                    →
+                                <p class="mt-5 text-sm leading-7 text-gray-500">
+                                    {{ $featuredNews['excerpt'] }}
+                                </p>
+
+                                <span class="mt-8 w-fit border-b-2 border-[#F4C430] pb-1 text-sm font-black">
+                                    Baca selengkapnya →
                                 </span>
+                            </div>
+                        </a>
+                    @endif
 
-                            </article>
-                        @endforeach
+                    {{-- News list --}}
+                    @if ($newsList->isNotEmpty())
+                        <div class="mt-8 grid border-t border-[#CEC8BC]">
+                            @foreach ($newsList as $news)
+                                <a href="{{ url('/news/' . $news['slug']) }}"
+                                    class="group grid gap-4 border-b border-[#CEC8BC] py-6 sm:grid-cols-[160px_1fr_auto] sm:items-center">
 
+                                    <span class="text-xs font-bold uppercase tracking-wider text-[#B91C1C]">
+                                        {{ $news['date'] }}
+                                    </span>
+
+                                    <h3 class="font-black group-hover:text-[#B91C1C] transition-colors">
+                                        {{ $news['title'] }}
+                                    </h3>
+
+                                    <span
+                                        class="text-gray-400 transition group-hover:translate-x-1 group-hover:text-[#B91C1C]">
+                                        →
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="mt-14 border border-dashed border-[#CEC8BC] bg-white py-16 text-center">
+                            <p class="text-sm font-semibold text-gray-500">Belum ada berita yang dipublikasikan</p>
+                        </div>
+                    @endif
+
+                    <div class="mt-10 flex justify-center">
+                        <a href="{{ url('/news') }}"
+                            class="bg-[#B91C1C] px-6 py-3.5 text-sm font-bold text-white transition hover:bg-[#991B1B]">
+                            Lihat semua berita →
+                        </a>
                     </div>
 
                 </div>

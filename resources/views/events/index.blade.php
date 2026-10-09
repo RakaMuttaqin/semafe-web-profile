@@ -8,25 +8,27 @@
 @php
     $fmt = fn($d, $f) => $d ? \Carbon\Carbon::parse($d)->translatedFormat($f) : null;
 
-    $events = Events::where('status', 'published')
-        ->orderBy('start_at')
-        ->get()
-        ->map(function ($e) use ($fmt) {
-            return [
-                'id' => $e->id,
-                'title' => $e->title,
-                'slug' => $e->slug,
-                'description' => \Illuminate\Support\Str::limit(strip_tags($e->description ?? ''), 160),
-                'image' => $e->image ?: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=85',
-                'location' => $e->location ?? '-',
-                'day' => $fmt($e->start_at, 'd') ?? '-',
-                'month' => strtoupper($fmt($e->start_at, 'M') ?? '-'),
-                'year' => $fmt($e->start_at, 'Y') ?? '-',
-                'time' => ($fmt($e->start_at, 'H:i') ?? '-') . ' - ' . ($fmt($e->end_at, 'H:i') ?? '-') . ' WIB',
-                'date_display' => ($fmt($e->start_at, 'd M Y') ?? '-') . ' • ' . ($fmt($e->start_at, 'H:i') ?? '-') . ' WIB',
-                'is_upcoming' => $e->start_at && \Carbon\Carbon::parse($e->start_at)->isFuture(),
-            ];
-        });
+    $events = Illuminate\Support\Facades\Schema::hasTable('events')
+        ? Events::where('status', 'published')
+            ->orderBy('start_at')
+            ->get()
+            ->map(function ($e) use ($fmt) {
+                return [
+                    'id' => $e->id,
+                    'title' => $e->title,
+                    'slug' => $e->slug,
+                    'description' => \Illuminate\Support\Str::limit(strip_tags($e->description ?? ''), 160),
+                    'image' => $e->image ?: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=85',
+                    'location' => $e->location ?? '-',
+                    'day' => $fmt($e->start_at, 'd') ?? '-',
+                    'month' => strtoupper($fmt($e->start_at, 'M') ?? '-'),
+                    'year' => $fmt($e->start_at, 'Y') ?? '-',
+                    'time' => ($fmt($e->start_at, 'H:i') ?? '-') . ' - ' . ($fmt($e->end_at, 'H:i') ?? '-') . ' WIB',
+                    'date_display' => ($fmt($e->start_at, 'd M Y') ?? '-') . ' • ' . ($fmt($e->start_at, 'H:i') ?? '-') . ' WIB',
+                    'is_upcoming' => $e->start_at && \Carbon\Carbon::parse($e->start_at)->isFuture(),
+                ];
+            })
+        : collect();
 
     $upcoming = $events->where('is_upcoming', true);
     $past = $events->where('is_upcoming', false);

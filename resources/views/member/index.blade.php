@@ -3,6 +3,28 @@
 @section('title', 'Anggota')
 
 @section('content')
+@use(App\Models\Member)
+@use(App\Models\Division)
+@php
+    $palette = ['#6366f1', '#a855f7', '#f97316', '#22c55e', '#3b82f6', '#ef4444', '#14b8a6', '#f59e0b'];
+    $divisionNames = Division::pluck('name', 'id');
+
+    $members = Member::orderByDesc('id')->get()->map(function ($m) use ($palette, $divisionNames) {
+        return [
+            'id' => $m->id,
+            'nim' => $m->nim,
+            'name' => $m->name,
+            'position' => $m->position,
+            'division_id' => $m->division_id,
+            'divisi' => $divisionNames[$m->division_id] ?? '-',
+            'divisi_color' => isset($divisionNames[$m->division_id]) ? $palette[($m->division_id - 1) % count($palette)] : '#6b7280',
+            'photo' => $m->photos && str_starts_with($m->photos, 'http')
+                ? $m->photos
+                : 'https://ui-avatars.com/api/?name=' . urlencode($m->name) . '&background=6366f1&color=fff&size=128',
+            'joined' => $m->created_at?->translatedFormat('d F Y') ?? '-',
+        ];
+    })->values();
+@endphp
     <div x-data="memberTable" class="relative">
 
         {{-- Toast --}}
@@ -45,11 +67,9 @@
                 <select x-model="divisionFilter"
                     class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white">
                     <option value="">Semua Divisi</option>
-                    <option value="Humas">Humas</option>
-                    <option value="Media">Media</option>
-                    <option value="Kegiatan">Kegiatan</option>
-                    <option value="Danus">Danus</option>
-                    <option value="PSDM">PSDM</option>
+                    @foreach ($divisionNames as $dId => $dName)
+                        <option value="{{ $dName }}">{{ $dName }}</option>
+                    @endforeach
                 </select>
 
                 <button @click="selected = {}; openInsert = true" type="button"
@@ -80,7 +100,6 @@
                             <th class="pb-3 font-medium text-left">NIM</th>
                             <th class="pb-3 font-medium text-left">Divisi</th>
                             <th class="pb-3 font-medium text-left">Jabatan</th>
-                            <th class="pb-3 font-medium text-left">Angkatan</th>
                             <th class="pb-3 font-medium text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -102,7 +121,6 @@
                                         x-text="m.divisi"></span>
                                 </td>
                                 <td class="py-4 text-gray-700" x-text="m.position"></td>
-                                <td class="py-4 text-gray-500" x-text="m.batch"></td>
                                 <td class="py-4 text-right space-x-2">
                                     <button @click="openDetail(m)"
 
@@ -121,7 +139,7 @@
 
                     <tbody x-show="memberFiltered.length === 0">
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-gray-500">Tidak ada data anggota</td>
+                            <td colspan="6" class="py-8 text-center text-gray-500">Tidak ada data anggota</td>
                         </tr>
                     </tbody>
                 </table>
@@ -156,13 +174,10 @@
                     <div>
                         <label class="block text-sm text-gray-600 mb-1">Divisi</label>
                         <select name="division_id" required
-
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            <option value="1">Humas</option>
-                            <option value="2">Media</option>
-                            <option value="3">Kegiatan</option>
-                            <option value="4">Danus</option>
-                            <option value="5">PSDM</option>
+                            @foreach ($divisionNames as $dId => $dName)
+                                <option value="{{ $dId }}">{{ $dName }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -196,7 +211,7 @@
             <div class="w-full max-w-md p-6 bg-white rounded-xl shadow-lg" @click.away="openEdit = false">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Edit Anggota</h3>
 
-                <form :action="'/member/update' + selected.id" method="POST" class="space-y-4">
+                <form :action="'/member/edit/' + selected.id" method="POST" class="space-y-4">
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="id" :value="selected.id">
@@ -217,11 +232,9 @@
                         <label class="block text-sm text-gray-600 mb-1">Divisi</label>
                         <select name="division_id" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            <option value="1" :selected="selected.divisi === 'Humas'">Humas</option>
-                            <option value="2" :selected="selected.divisi === 'Media'">Media</option>
-                            <option value="3" :selected="selected.divisi === 'Kegiatan'">Kegiatan</option>
-                            <option value="4" :selected="selected.divisi === 'Danus'">Danus</option>
-                            <option value="5" :selected="selected.divisi === 'PSDM'">PSDM</option>
+                            @foreach ($divisionNames as $dId => $dName)
+                                <option value="{{ $dId }}" :selected="selected.division_id == {{ $dId }}">{{ $dName }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -274,10 +287,6 @@
                                 <dt class="text-gray-500">Jabatan</dt>
                                 <dd class="font-medium text-gray-800" x-text="detail.position"></dd>
                             </div>
-                            <div class="flex justify-between py-2">
-                                <dt class="text-gray-500">Angkatan</dt>
-                                <dd class="font-medium text-gray-800" x-text="detail.batch"></dd>
-                            </div>
                         </dl>
 
                         <div class="flex justify-end mt-6">
@@ -306,7 +315,7 @@
 
                 <p class="mb-4 text-sm text-gray-500">Data anggota ini akan dihapus permanen.</p>
 
-                <form :action="'/member/delete' + selected.id" method="POST" class="flex justify-end space-x-2">
+                <form :action="'/member/remove/' + selected.id" method="POST" class="flex justify-end space-x-2">
                     @csrf
                     @method('DELETE')
 
@@ -320,26 +329,6 @@
         </div>
     </div>
 @endsection
-
-@php
-    $members = [
-        ['id' => 1, 'nim' => '230101', 'name' => 'Andi Pratama', 'divisi' => 'Humas', 'divisi_color' => '#6366f1', 'position' => 'Koordinator', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Andi+Pratama&background=6366f1&color=fff&size=128'],
-        ['id' => 2, 'nim' => '230102', 'name' => 'Budi Santoso', 'divisi' => 'Kegiatan', 'divisi_color' => '#f97316', 'position' => 'Koordinator', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Budi+Santoso&background=f97316&color=fff&size=128'],
-        ['id' => 3, 'nim' => '230103', 'name' => 'Citra Dewi', 'divisi' => 'Media', 'divisi_color' => '#a855f7', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Citra+Dewi&background=a855f7&color=fff&size=128'],
-        ['id' => 4, 'nim' => '230104', 'name' => 'Dewi Lestari', 'divisi' => 'Danus', 'divisi_color' => '#22c55e', 'position' => 'Koordinator', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Dewi+Lestari&background=22c55e&color=fff&size=128'],
-        ['id' => 5, 'nim' => '230105', 'name' => 'Eko Prasetyo', 'divisi' => 'PSDM', 'divisi_color' => '#3b82f6', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Eko+Prasetyo&background=3b82f6&color=fff&size=128'],
-        ['id' => 6, 'nim' => '230106', 'name' => 'Farah Amalia', 'divisi' => 'Humas', 'divisi_color' => '#6366f1', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Farah+Amalia&background=6366f1&color=fff&size=128'],
-        ['id' => 7, 'nim' => '230107', 'name' => 'Gilang Ramadhan', 'divisi' => 'Kegiatan', 'divisi_color' => '#f97316', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Gilang+Ramadhan&background=f97316&color=fff&size=128'],
-        ['id' => 8, 'nim' => '230108', 'name' => 'Hana Putri', 'divisi' => 'Media', 'divisi_color' => '#a855f7', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Hana+Putri&background=a855f7&color=fff&size=128'],
-        ['id' => 9, 'nim' => '230109', 'name' => 'Indra Wijaya', 'divisi' => 'Danus', 'divisi_color' => '#22c55e', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Indra+Wijaya&background=22c55e&color=fff&size=128'],
-        ['id' => 10, 'nim' => '230110', 'name' => 'Joko Susilo', 'divisi' => 'PSDM', 'divisi_color' => '#3b82f6', 'position' => 'Staff', 'batch' => '2023', 'photo' => 'https://ui-avatars.com/api/?name=Joko+Susilo&background=3b82f6&color=fff&size=128'],
-        ['id' => 11, 'nim' => '240101', 'name' => 'Kartika Sari', 'divisi' => 'Humas', 'divisi_color' => '#6366f1', 'position' => 'Anggota', 'batch' => '2024', 'photo' => 'https://ui-avatars.com/api/?name=Kartika+Sari&background=6366f1&color=fff&size=128'],
-        ['id' => 12, 'nim' => '240102', 'name' => 'Lukman Hakim', 'divisi' => 'Kegiatan', 'divisi_color' => '#f97316', 'position' => 'Anggota', 'batch' => '2024', 'photo' => 'https://ui-avatars.com/api/?name=Lukman+Hakim&background=f97316&color=fff&size=128'],
-        ['id' => 13, 'nim' => '240103', 'name' => 'Maya Indah', 'divisi' => 'Media', 'divisi_color' => '#a855f7', 'position' => 'Anggota', 'batch' => '2024', 'photo' => 'https://ui-avatars.com/api/?name=Maya+Indah&background=a855f7&color=fff&size=128'],
-        ['id' => 14, 'nim' => '240104', 'name' => 'Nanda Putra', 'divisi' => 'Danus', 'divisi_color' => '#22c55e', 'position' => 'Anggota', 'batch' => '2024', 'photo' => 'https://ui-avatars.com/api/?name=Nanda+Putra&background=22c55e&color=fff&size=128'],
-        ['id' => 15, 'nim' => '240105', 'name' => 'Okta Riani', 'divisi' => 'PSDM', 'divisi_color' => '#3b82f6', 'position' => 'Anggota', 'batch' => '2024', 'photo' => 'https://ui-avatars.com/api/?name=Okta+Riani&background=3b82f6&color=fff&size=128'],
-    ];
-@endphp
 
 @push('scripts')
 <script>
@@ -387,8 +376,7 @@ document.addEventListener('alpine:init', () => {
                 m.name.toLowerCase().includes(s) ||
                 m.nim.toString().includes(s) ||
                 m.divisi.toLowerCase().includes(s) ||
-                m.position.toLowerCase().includes(s) ||
-                m.batch.toLowerCase().includes(s)
+                m.position.toLowerCase().includes(s)
             );
         }
     }));

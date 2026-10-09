@@ -6,21 +6,23 @@
 
 @section('content')
 @php
-    $newsList = News::with('users')
-        ->where('status', 'published')
-        ->latest('published_at')
-        ->get()
-        ->map(function ($n) {
-            return [
-                'id' => $n->id,
-                'title' => $n->title,
-                'slug' => $n->slug,
-                'excerpt' => \Illuminate\Support\Str::limit(strip_tags($n->content), 160),
-                'thumbnail' => $n->thumbnail ?: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85',
-                'date' => optional($n->published_at)->translatedFormat('d M Y') ?? '-',
-                'author' => $n->users?->name ?? 'Admin SEMAFE',
-            ];
-        });
+    $newsList = Illuminate\Support\Facades\Schema::hasTable('news')
+        ? News::with('users')
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->get()
+            ->map(function ($n) {
+                return [
+                    'id' => $n->id,
+                    'title' => $n->title,
+                    'slug' => $n->slug,
+                    'excerpt' => \Illuminate\Support\Str::limit(strip_tags($n->content), 160),
+                    'thumbnail' => $n->thumbnail ?: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85',
+                    'date' => optional($n->published_at)->translatedFormat('d M Y') ?? '-',
+                    'author' => $n->users?->name ?? 'Admin SEMAFE',
+                ];
+            })
+        : collect();
 @endphp
 
 <div x-data="newsIndex()" class="min-h-screen bg-[#FFFDF7] text-[#171717]">

@@ -146,7 +146,7 @@
                 <h3 class="mb-2 text-lg font-semibold text-gray-800">Hapus Peran?</h3>
                 <p class="mb-4 text-sm text-gray-500">Data <span x-text="selected.name"
                         class="font-medium text-red-600"></span> akan dihapus permanen.</p>
-                <form :action="'/role/delete/' + selected.id" method="POST" class="flex justify-end space-x-2">
+                <form :action="'/role/remove/' + selected.id" method="POST" class="flex justify-end space-x-2">
                     @csrf
                     @method('DELETE')
                     <button type="button" @click="openDelete = false"
