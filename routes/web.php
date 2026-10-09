@@ -20,6 +20,23 @@ Route::get('/', function () {
     return view('landing.index');
 });
 
+// Informasi publik: Berita & Kegiatan (view-only, tanpa mengubah backend CRUD)
+Route::get('/news', function () {
+    return view('news.index');
+})->name('berita.index');
+
+Route::get('/news/{slug}', function ($slug) {
+    return view('news.show', compact('slug'));
+})->name('berita.show');
+
+Route::get('/events', function () {
+    return view('events.index');
+})->name('kegiatan.index');
+
+Route::get('/events/{slug}', function ($slug) {
+    return view('events.show', compact('slug'));
+})->name('kegiatan.show');
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', function () {
