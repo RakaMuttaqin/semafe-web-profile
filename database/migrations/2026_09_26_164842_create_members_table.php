@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('position')->nullable();
             $table->string('photos')->nullable();
-            $table->text('bio')->nullable();
+            // $table->text('bio')->nullable();
             $table->enum('status', ['active', 'inactive', 'demisioner', 'resigned'])->default('active');
             $table->timestamps();
         });

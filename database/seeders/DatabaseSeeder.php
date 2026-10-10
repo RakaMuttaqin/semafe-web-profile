@@ -17,19 +17,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        Role::factory()->create([
-            'name' => 'Admin',
-            'slug' => 'admin',
+        $this->call([
+            RoleSeeder::class,
+            DivisionSeeder::class,
+            // MemberSeeder::class,
         ]);
 
-        User::factory()->create([
-            'role_id' => 1,
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'status' => 'active',
-        ]);
+        $roles = Role::all();
+
+        $users = [
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'role_id' => $roles->firstWhere('slug', 'admin')?->id,
+                'password' => Hash::make('password'),
+            ],
+            [
+                'name' => 'Operator',
+                'email' => 'operator@example.com',
+                'role_id' => $roles->firstWhere('slug', 'operator')?->id,
+                'password' => Hash::make('password'),
+            ],
+            [
+                'name' => 'Media',
+                'email' => 'media@example.com',
+                'role_id' => $roles->firstWhere('slug', 'media')?->id,
+                'password' => Hash::make('password'),
+            ],
+        ];
+
+        foreach ($users as $user) {
+            User::factory()->create($user);
+        }
     }
 }

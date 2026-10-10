@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('content');
-            $table->string('thumbnail');
+            $table->string('thumbnail')->nullable();
             $table->dateTime('published_at');
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
