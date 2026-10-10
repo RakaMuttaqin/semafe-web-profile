@@ -111,7 +111,8 @@
             <div class="w-full max-w-2xl p-6 bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto"
                 @click.away="openInsert = false; openEdit = false">
 
-                <h3 class="mb-5 text-lg font-semibold text-gray-800" x-text="openEdit ? 'Edit Berita' : 'Tulis Berita Baru'"></h3>
+                <h3 class="mb-5 text-lg font-semibold text-gray-800"
+                    x-text="openEdit ? 'Edit Berita' : 'Tulis Berita Baru'"></h3>
 
                 <form :action="action" method="POST" class="space-y-4">
                     @csrf
@@ -149,8 +150,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">URL Thumbnail</label>
-                            <input type="url" name="thumbnail" x-model="form.thumbnail" required
-                                placeholder="https://..."
+                            <input type="url" name="thumbnail" x-model="form.thumbnail" placeholder="https://..."
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         </div>
                         <div>
@@ -214,7 +214,9 @@
                 'slug' => $n->slug,
                 'content' => $n->content,
                 'excerpt' => \Illuminate\Support\Str::limit(strip_tags($n->content), 120),
-                'thumbnail' => $n->thumbnail ?: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85',
+                'thumbnail' =>
+                    $n->thumbnail ?:
+                    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85',
                 'published_at' => optional($n->published_at)->format('Y-m-d\TH:i') ?? '',
                 'date_display' => optional($n->published_at)->translatedFormat('d M Y') ?? '-',
                 'author' => $n->users?->name ?? 'Admin',
@@ -236,14 +238,21 @@
                 form: {},
                 search: '',
                 statusFilter: '',
-                toast: { show: false, message: '' },
+                toast: {
+                    show: false,
+                    message: ''
+                },
 
                 get action() {
-                    return this.openEdit ? '/admin/news/update/' + this.selected.id : '{{ route('admin.news.store') }}';
+                    return this.openEdit ? '/admin/news/update/' + this.selected.id :
+                        '{{ route('admin.news.store') }}';
                 },
 
                 notify(message) {
-                    this.toast = { show: true, message };
+                    this.toast = {
+                        show: true,
+                        message
+                    };
                     clearTimeout(this._toastTimer);
                     this._toastTimer = setTimeout(() => {
                         this.toast.show = false;
@@ -265,7 +274,10 @@
 
                 edit(n) {
                     this.selected = n;
-                    this.form = { ...n, published_at: n.published_at || '' };
+                    this.form = {
+                        ...n,
+                        published_at: n.published_at || ''
+                    };
                     this.openEdit = true;
                     this.openInsert = false;
                 },
@@ -275,7 +287,7 @@
                         'bg-green-100 text-green-700': status === 'published',
                         'bg-gray-100 text-gray-600': status === 'draft',
                         'bg-yellow-100 text-yellow-700': status === 'archived',
-                    }[status] || 'bg-gray-100 text-gray-600';
+                    } [status] || 'bg-gray-100 text-gray-600';
                 },
 
                 statusLabel(status) {
@@ -283,7 +295,7 @@
                         published: 'Published',
                         draft: 'Draft',
                         archived: 'Diarsipkan',
-                    }[status] || status;
+                    } [status] || status;
                 },
 
                 get filtered() {

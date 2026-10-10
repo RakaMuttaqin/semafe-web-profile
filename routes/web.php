@@ -9,6 +9,7 @@ use App\Models\Events;
 use App\Models\Member;
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [LoginController::class, 'showLogin'])
@@ -49,6 +50,7 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// ADMIN
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // User
     Route::get('user/', [UserController::class, 'index'])->name('user.index');
@@ -63,73 +65,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('role/delete/{role}', [RoleController::class, 'destroy'])->name('role.delete');
 });
 
+// OPERATOR
 Route::middleware(['auth', 'role:operator,admin'])->group(function () {
     // Division
     Route::get('division/', [DivisionController::class, 'index'])->name('division.index');
     Route::post('division/store', [DivisionController::class, 'store'])->name('division.store');
-    Route::patch('division/update{id}', [DivisionController::class, 'update'])->name('division.update');
-    Route::delete('division/delete{id}', [DivisionController::class, 'destroy'])->name('division.delete');
+    Route::patch('division/update/{division}', [DivisionController::class, 'update'])->name('division.update');
+    Route::delete('division/delete/{division}', [DivisionController::class, 'destroy'])->name('division.delete');
 
     // Member
-    Route::get('member/', function () {
-        $members = Member::with('divisions')->get();
-
-        return view('member.index', compact('members'));
-    })->name('member.index');
-    Route::patch('member/update{id}', [MemberController::class, 'update'])->name('member.update');
-    Route::delete('member/delete{id}', [MemberController::class, 'destroy'])->name('member.delete');
-});
-
-/* -------------------------------------------------------------------------
- * MANAJEMEN ANGGOTA (route helper — controller belum mengembalikan redirect)
- * ---------------------------------------------------------------------- */
-Route::middleware(['auth', 'role:operator,admin'])->group(function () {
-    Route::post('member/store', function (Request $request) {
-        $data = $request->validate([
-            'nim' => 'required|integer|unique:members,nim',
-            'name' => 'required|string|max:255',
-            'division_id' => 'required|exists:divisions,id',
-            'position' => 'required|string|max:255',
-            'photos' => 'nullable|string|max:2048',
-        ]);
-
-        Member::create($data);
-
-        return redirect()->back()->with('success', 'Anggota berhasil ditambahkan.');
-    })->name('member.store');
-
-    Route::patch('member/edit/{id}', function (Request $request, $id) {
-        $member = Member::findOrFail($id);
-
-        $data = $request->validate([
-            'nim' => 'required|integer|unique:members,nim,' . $member->id,
-            'name' => 'required|string|max:255',
-            'division_id' => 'required|exists:divisions,id',
-            'position' => 'required|string|max:255',
-            'photos' => 'nullable|string|max:2048',
-        ]);
-
-        $member->update($data);
-
-        return redirect()->back()->with('success', 'Data anggota berhasil diperbarui.');
-    })->name('member.edit');
-
-    Route::delete('member/remove/{id}', function ($id) {
-        Member::findOrFail($id)->delete();
-
-        return redirect()->back()->with('success', 'Anggota berhasil dihapus.');
-    })->name('member.remove');
-});
-
-/* -------------------------------------------------------------------------
- * HAPUS PERAN (controller tidak mengembalikan redirect)
- * ---------------------------------------------------------------------- */
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::delete('role/remove/{id}', function ($id) {
-        \App\Models\Role::findOrFail($id)->delete();
-
-        return redirect()->back()->with('success', 'Peran berhasil dihapus.');
-    })->name('role.remove');
+    Route::get('member/', [MemberController::class, 'index'])->name('member.index');
+    Route::post('member/store', [MemberController::class, 'store'])->name('member.store');
+    Route::patch('member/update/{member}', [MemberController::class, 'update'])->name('member.update');
+    Route::delete('member/delete/{member}', [MemberController::class, 'destroy'])->name('member.delete');
 });
 
 /* -------------------------------------------------------------------------
@@ -145,12 +93,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:news,slug',
             'content' => 'required|string',
-            'thumbnail' => 'required|string|max:2048',
+            'thumbnail' => 'nullable|string|max:2048',
             'published_at' => 'required|date',
             'status' => 'required|in:draft,published,archived',
         ]);
 
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = Auth::user()->id;
         News::create($data);
 
         return redirect()->back()->with('success', 'Berita berhasil dipublikasikan.');
@@ -161,7 +109,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:news,slug,' . $news->id,
+            'slug' => 'required|string|max:255|unique:news,slug,'.$news->id,
             'content' => 'required|string',
             'thumbnail' => 'required|string|max:2048',
             'published_at' => 'required|date',
@@ -205,7 +153,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:events,slug,' . $event->id,
+            'slug' => 'required|string|max:255|unique:events,slug,'.$event->id,
             'description' => 'required|string',
             'image' => 'required|string|max:2048',
             'location' => 'required|string|max:255',

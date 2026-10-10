@@ -3,16 +3,6 @@
 @section('title', 'Peran')
 
 @section('content')
-@php
-    $users = $users ?? [
-        (object)['id' => 1, 'name' => 'Admin SEMAFE'],
-        (object)['id' => 2, 'name' => 'Ketua'],
-    ];
-    $roles = $roles ?? [
-        (object)['id' => 1, 'name' => 'Admin', 'slug' => 'admin', 'description' => 'Akses penuh', 'user_count' => 2],
-        (object)['id' => 2, 'name' => 'Koordinator', 'slug' => 'koordinator', 'description' => 'Kelola divisi', 'user_count' => 8],
-    ];
-@endphp
     <div x-data="roleTable">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Peran</h2>
@@ -63,7 +53,7 @@
                                 <td class="py-4">
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
-                                        x-text="role.users.count + ' pengguna'">
+                                        x-text="role.users_count + ' pengguna'">
                                     </span>
                                 </td>
                                 <td class="py-4 text-right space-x-2">
@@ -101,7 +91,7 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div class="flex justify-end space-x-2 pt-2">
-                        <button type="button" @click="openEdit = false"
+                        <button type="button" @click="openInsert = false"
                             class="px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">Batal</button>
                         <button type="submit"
                             class="px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">Simpan
@@ -146,7 +136,7 @@
                 <h3 class="mb-2 text-lg font-semibold text-gray-800">Hapus Peran?</h3>
                 <p class="mb-4 text-sm text-gray-500">Data <span x-text="selected.name"
                         class="font-medium text-red-600"></span> akan dihapus permanen.</p>
-                <form :action="'/role/remove/' + selected.id" method="POST" class="flex justify-end space-x-2">
+                <form :action="'/role/delete/' + selected.id" method="POST" class="flex justify-end space-x-2">
                     @csrf
                     @method('DELETE')
                     <button type="button" @click="openDelete = false"
@@ -160,22 +150,11 @@
     </div>
 @endsection
 
-{{-- @php
-$roles = [
-    ['id' => 1, 'name' => 'Admin', 'slug' => 'admin', 'description' => 'Akses penuh ke semua fitur sistem', 'user_count' => 2],
-    ['id' => 2, 'name' => 'Koordinator Divisi', 'slug' => 'koordinator', 'description' => 'Mengelola anggota dan kegiatan divisi', 'user_count' => 8],
-    ['id' => 3, 'name' => 'Anggota', 'slug' => 'anggota', 'description' => 'Akses dasar untuk partisipasi kegiatan', 'user_count' => 117],
-    ['id' => 4, 'name' => 'Operator', 'slug' => 'operator', 'description' => 'Bantuan administrasi dan input data', 'user_count' => 10],
-    ['id' => 5, 'name' => 'Alumni', 'slug' => 'alumni', 'description' => 'Akses terbatas hanya untuk arsip', 'user_count' => 45],
-];
-@endphp --}}
-
 @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('roleTable', () => ({
                 roles: @json($roles),
-                users: @json($users),
                 openInsert: false,
                 openEdit: false,
                 openDelete: false,

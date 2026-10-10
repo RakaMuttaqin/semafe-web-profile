@@ -64,8 +64,9 @@
                                     <span x-show="!division.coordinator" class="text-sm text-gray-400">— belum ada —</span>
                                 </td>
                                 <td class="py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700"
-                                        x-text="division.member_count + ' anggota'"></span>
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700"
+                                        x-text="division.members_count + ' anggota'"></span>
                                 </td>
                                 <td class="py-4 text-right">
                                     <button @click="selected = division; openEdit = true"
@@ -116,12 +117,12 @@
         </div>
 
         {{-- Modal Edit --}}
-        <div x-show="openEdit" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-            style="display:none" x-transition.opacity>
+        <div x-show="openEdit" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" style="display:none"
+            x-transition.opacity>
             <div class="w-full max-w-md p-6 bg-white rounded-xl shadow-lg" @click.away="openEdit = false">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Edit Divisi</h3>
 
-                <form :action="'/division/update' + selected.id" method="POST" class="space-y-4">
+                <form :action="'/division/update/' + selected.id" method="POST" class="space-y-4">
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="id" :value="selected.id">
@@ -155,27 +156,6 @@
         </div>
     </div>
 @endsection
-
-@php
-    $palette = ['#6366f1', '#a855f7', '#f97316', '#22c55e', '#3b82f6', '#ef4444', '#14b8a6', '#f59e0b'];
-
-    $divisions = ($divisions ?? \App\Models\Division::withCount('members')->get())
-        ->map(function ($d) use ($palette) {
-            $coordinator = $d->members()->where('position', 'like', '%oordinator%')->first();
-
-            return [
-                'id' => $d->id,
-                'name' => $d->name,
-                'slug' => $d->slug,
-                'member_count' => $d->members_count ?? $d->members()->count(),
-                'coordinator' => $coordinator?->name,
-                'coordinator_photo' => $coordinator
-                    ? 'https://ui-avatars.com/api/?name=' . urlencode($coordinator->name) . '&background=' . ltrim($palette[($d->id - 1) % count($palette)], '#') . '&color=fff&size=64'
-                    : null,
-            ];
-        })
-        ->values();
-@endphp
 
 @push('scripts')
     <script>
