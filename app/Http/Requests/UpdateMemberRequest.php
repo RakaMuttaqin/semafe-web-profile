@@ -23,11 +23,12 @@ class UpdateMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nim' => 'required|string',
-            'name' => 'required|string',
-            'division_id' => 'required',
-            'position' => 'required|string',
-            'photos' => 'required|image',
+            'nim' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'division_id' => 'required|exists:divisions,id',
+            'position' => 'required|string|max:255',
+            'photos' => 'required|string|max:2048',
+            'status' => 'required|in:active,inactive,demisioner,resigned',
         ];
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
-use App\Models\User;
 
 class RoleController extends Controller
 {
@@ -14,19 +13,10 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $users = User::with('role')->get();
-        $roles = Role::with('users')->get();
-        // dd($users->where('role_id', 3)->count());
-// dd($roles->where('users.id', 1)->count());
-        return view('role.index', compact('roles', 'users'));
-    }
+        $roles = Role::withCount('users')->get();
+        // dd($roles);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('role.index', compact('roles'));
     }
 
     /**
@@ -41,23 +31,7 @@ class RoleController extends Controller
             'slug' => $validatedData['slug'],
         ]);
 
-        return redirect('role')->with('success', 'Data Berhasil Ditambahkan.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Role $role)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Role $role)
-    {
-        //
+        return redirect()->back()->with('success', 'Data Berhasil Ditambahkan.');
     }
 
     /**
@@ -73,7 +47,7 @@ class RoleController extends Controller
             'slug' => $validatedData['slug'],
         ]);
 
-        return redirect('role')->with('success', 'Data Berhasil Ditambahkan');
+        return redirect()->back()->with('success', 'Data Berhasil Ditambahkan');
     }
 
     /**
@@ -81,6 +55,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        Role::findOrFail($role->id)->destroy();
+        Role::findOrFail($role->id)->delete();
+
+        return redirect()->back()->with('success', 'Peran berhasil dihapus.');
     }
 }

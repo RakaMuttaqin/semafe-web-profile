@@ -13,15 +13,9 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $members = Member::with('divisions')->get();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('member.index', compact('members'));
     }
 
     /**
@@ -38,22 +32,8 @@ class MemberController extends Controller
             'position' => $validatedData['position'],
             'photos' => $validatedData['photos'],
         ]);
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Member $member)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Member $member)
-    {
-        //
+        return redirect()->back()->with('success', 'Anggota berhasil ditambahkan.');
     }
 
     /**
@@ -62,13 +42,16 @@ class MemberController extends Controller
     public function update(UpdateMemberRequest $request, Member $member)
     {
         $validatedData = $request->validated();
-        Member::findOrFail($member->id)->update([
+        $members = Member::findOrFail($member->id)->update([
             'nim' => $validatedData['nim'],
             'name' => $validatedData['name'],
             'division_id' => $validatedData['division_id'],
             'position' => $validatedData['position'],
-            'photos' => $validatedData['photos'],
+            'photos' => $validatedData['photos'] ?? null,
+            'status' => $validatedData['status'],
         ]);
+
+        return redirect()->back()->with('success', 'Data anggota berhasil diperbarui.');
     }
 
     /**
@@ -76,6 +59,8 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        Member::findOrFail($member->id)->destroy();
+        Member::findOrFail($member->id)->delete();
+
+        return redirect()->back()->with('success', 'Anggota berhasil dihapus.');
     }
 }

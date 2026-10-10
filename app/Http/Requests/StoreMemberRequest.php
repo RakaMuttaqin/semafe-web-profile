@@ -23,11 +23,11 @@ class StoreMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nim' => 'required|string',
-            'name' => 'required|string',
-            'division_id' => 'required',
-            'position' => 'required|string',
-            'photos' => 'required|image',
+            'nim' => 'required|integer|unique:members,nim',
+            'name' => 'required|string|max:255',
+            'division_id' => 'required|exists:divisions,id',
+            'position' => 'required|string|max:255',
+            'photos' => 'nullable|string|max:2048',
         ];
     }
 }

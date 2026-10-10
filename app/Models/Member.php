@@ -10,7 +10,7 @@ class Member extends Model
     /** @use HasFactory<\Database\Factories\MemberFactory> */
     use HasFactory;
 
-    protected $fillable = ['division_id', 'nim', 'name', 'position', 'photos'];
+    protected $fillable = ['division_id', 'nim', 'name', 'position', 'photos', 'status'];
 
     public function divisions()
     {

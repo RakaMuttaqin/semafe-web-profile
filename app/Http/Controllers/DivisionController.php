@@ -13,17 +13,26 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        $divisions = Division::with('members')->get();
+        $palette = ['#6366f1', '#a855f7', '#f97316', '#22c55e', '#3b82f6', '#ef4444', '#14b8a6', '#f59e0b'];
+
+        $divisions = ($divisions ?? Division::withCount('members')->get())
+            ->map(function ($d) use ($palette) {
+                $coordinator = $d->members()->where('position', 'like', '%Koordinator%')->first();
+
+                return [
+                    'id' => $d->id,
+                    'name' => $d->name,
+                    'slug' => $d->slug,
+                    'members_count' => $d->members_count ?? $d->members()->count(),
+                    'coordinator' => $coordinator?->name,
+                    'coordinator_photo' => $coordinator
+                        ? 'https://ui-avatars.com/api/?name='.urlencode($coordinator->name).'&background='.ltrim($palette[($d->id - 1) % count($palette)], '#').'&color=fff&size=64'
+                        : null,
+                ];
+            })
+            ->values();
 
         return view('division.index', compact('divisions'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -37,23 +46,7 @@ class DivisionController extends Controller
             'slug' => $validatedData['slug'],
         ]);
 
-        return redirect('division')->with('success', 'Data berhasil ditambahkan');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Division $division)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Division $division)
-    {
-        //
+        return redirect()->back()->with('success', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -69,7 +62,7 @@ class DivisionController extends Controller
             'slug' => $validatedData['slug'],
         ]);
 
-        return redirect('division')->with('success', 'Data berhasil diubah.');
+        return redirect()->back()->with('success', 'Data berhasil diubah.');
     }
 
     /**
@@ -77,8 +70,8 @@ class DivisionController extends Controller
      */
     public function destroy(Division $division)
     {
-        Division::findOrFail($division->id)->destroy();
+        Division::findOrFail($division->id)->delete();
 
-        return redirect('division')->with('success', 'Data berhasil dihapus.');
+        return redirect()->back()->with('success', 'Data berhasil dihapus.');
     }
 }
