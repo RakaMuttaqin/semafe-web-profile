@@ -61,6 +61,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('role/store/', [RoleController::class, 'store'])->name('role.store');
     Route::patch('role/update/{role}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('role/delete/{role}', [RoleController::class, 'destroy'])->name('role.delete');
+
+    // Hapus pengguna (controller destroy tidak benar-benar menghapus)
+    Route::delete('user/remove/{id}', function ($id) {
+        $user = \App\Models\User::findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun yang sedang digunakan.');
+        }
+
+        if (\App\Models\User::count() <= 1) {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus pengguna terakhir.');
+        }
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'Pengguna "' . $user->name . '" berhasil dihapus.');
+    })->name('user.remove');
 });
 
 Route::middleware(['auth', 'role:operator,admin'])->group(function () {

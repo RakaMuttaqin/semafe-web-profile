@@ -84,9 +84,9 @@
                                 </td>
                                 <td class="py-4 text-right space-x-2">
                                     <button @click="selected = user; openEdit = true"
-                                        class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">Edit</button>
-                                    {{-- <button @click="selected = user; openDelete = true"
-                                        class="px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button> --}}
+                                        class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer">Edit</button>
+                                    <button @click="selected = user; openDelete = true"
+                                        class="px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer">Hapus</button>
                                 </td>
                             </tr>
                         </template>
@@ -207,7 +207,7 @@
                 <h3 class="mb-2 text-lg font-semibold text-gray-800">Hapus Pengguna?</h3>
                 <p class="mb-4 text-sm text-gray-500">Data <span x-text="selected.name"
                         class="font-medium text-red-600"></span> akan dihapus.</p>
-                <form :action="'/user/delete/' + selected.id" method="POST" class="flex justify-end space-x-2">
+                <form :action="'/user/remove/' + selected.id" method="POST" class="flex justify-end space-x-2">
                     @csrf
                     @method('DELETE')
                     <button type="button" @click="openDelete = false"

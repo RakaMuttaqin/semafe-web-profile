@@ -339,10 +339,10 @@ document.addEventListener('alpine:init', () => {
         openEdit: false,
         openDelete: false,
         openDetailModal: false,
-        selected: {},
-        detail: null,
-        search: '',
-        divisionFilter: '',
+                selected: {},
+                detail: null,
+                search: @json(request('q', '')),
+                divisionFilter: '',
         toast: {
             show: false,
             message: ''
