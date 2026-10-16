@@ -32,6 +32,22 @@
             'events' => $has('events') ? App\Models\Events::where('status', 'published')->count() : 0,
         ];
 
+        // Program kerja = event dari tiap divisi
+        $programEvents = $has('events')
+            ? App\Models\Events::where('status', 'published')
+                ->orderBy('start_at')
+                ->take(4)
+                ->get()
+                ->map(fn($e) => [
+                    'title' => $e->title,
+                    'slug' => $e->slug,
+                    'description' => \Illuminate\Support\Str::limit(strip_tags($e->description ?? ''), 110),
+                    'location' => $e->location ?? '-',
+                    'date' => optional($e->start_at)->translatedFormat('d M Y') ?? '-',
+                ])
+                ->values()
+            : collect();
+
         // Foto pengurus — pakai file bila ada, jika tidak pakai avatar
         $kabinetPhoto = function ($file, $name) {
             if ($file && file_exists(public_path('storage/foto/' . $file))) {
@@ -40,9 +56,18 @@
 
             return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=1f2937&color=fff&size=600';
         };
+
+        // Struktur kabinet (accordion)
+        $orgStructure = [
+            ['name' => 'Sekretaris', 'desc' => 'Administrasi surat-menyurat, notulen rapat, dan pengarsipan organisasi.'],
+            ['name' => 'Bendahara', 'desc' => 'Pengelolaan keuangan, penyusunan anggaran, dan laporan kas organisasi.'],
+            ['name' => 'Departemen PSDM', 'desc' => 'Pengembangan sumber daya mahasiswa, kaderisasi, dan rekrutmen anggota.'],
+            ['name' => 'Departemen Humas', 'desc' => 'Hubungan eksternal, publikasi, dan komunikasi organisasi.'],
+            ['name' => 'Departemen Kegiatan', 'desc' => 'Perencanaan dan pelaksanaan program kerja serta event organisasi.'],
+        ];
     @endphp
 
-    <div x-data="semafeLanding()" class="min-h-screen bg-[#FFFDF7] text-[#171717]">
+    <div x-data="semafeLanding()" class="flex min-h-screen flex-col bg-[#FFFDF7] text-[#171717]">
         <header class="fixed inset-x-0 top-0 z-50 border-b border-[#DED9CF] bg-[#FFFDF7]">
             <nav class="mx-auto flex h-18.5 max-w-7xl items-center justify-between px-6 lg:px-8">
                 {{-- LOGO --}}
@@ -173,7 +198,7 @@
         </header>
 
 
-        <main>
+        <main class="flex-1">
 
             <section id="home" class="scroll-mt-18.5 border-b border-[#DED9CF] bg-[#FFFDF7] pt-18.5">
                 <div class="mx-auto grid min-h-[calc(100vh-74)] max-w-7xl lg:grid-cols-[0.9fr_1.1fr]">
@@ -523,28 +548,54 @@
                             </div>
 
 
-                            {{-- Organization --}}
-                            <div class="mt-12 border-t border-white/10">
+                            {{-- Organization (accordion) --}}
+                            <div class="mt-12 border-t border-white/10" x-data="{ openPanel: 0 }">
 
-                                @foreach (['Sekretaris', 'Bendahara', 'Departemen PSDM', 'Departemen Humas', 'Departemen Kegiatan'] as $index => $position)
-                                    <div class="group flex items-center justify-between border-b border-white/10 py-5">
+                                @foreach ($orgStructure as $index => $item)
+                                    <div class="border-b border-white/10">
 
-                                        <div class="flex items-center gap-6">
+                                        <button type="button"
+                                            @click="openPanel = (openPanel === {{ $index }}) ? null : {{ $index }}"
+                                            class="group flex w-full items-center justify-between gap-4 py-5 text-left">
 
-                                            <span class="text-xs text-white/30">
-                                                {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                                            </span>
+                                            <div class="flex items-center gap-6">
 
-                                            <span class="font-semibold">
-                                                {{ $position }}
-                                            </span>
+                                                <span class="text-xs transition-colors duration-300"
+                                                    :class="openPanel === {{ $index }} ? 'text-[#F4C430]' : 'text-white/30'">
+                                                    {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
+                                                </span>
+
+                                                <span class="font-semibold transition-colors duration-300"
+                                                    :class="openPanel === {{ $index }} ? 'text-[#F4C430]' : 'text-white'">
+                                                    {{ $item['name'] }}
+                                                </span>
+
+                                            </div>
+
+                                            <svg class="h-4 w-4 shrink-0 transition-transform duration-300"
+                                                :class="openPanel === {{ $index }} ? 'rotate-90 text-[#F4C430]' :
+                                                    'text-white/30'"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+
+                                        </button>
+
+                                        <div x-show="openPanel === {{ $index }}" x-cloak
+                                            x-transition:enter="transition-all ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 max-h-0"
+                                            x-transition:enter-end="opacity-100 max-h-40"
+                                            x-transition:leave="transition-all ease-in duration-200"
+                                            x-transition:leave-start="opacity-100 max-h-40"
+                                            x-transition:leave-end="opacity-0 max-h-0"
+                                            class="overflow-hidden">
+
+                                            <p class="pb-6 pl-12 pr-10 text-sm leading-7 text-white/50">
+                                                {{ $item['desc'] }}
+                                            </p>
 
                                         </div>
-
-                                        <span
-                                            class="text-white/20 transition group-hover:translate-x-2 group-hover:text-[#F4C430]">
-                                            →
-                                        </span>
 
                                     </div>
                                 @endforeach
@@ -593,22 +644,28 @@
 
                             <div class="mt-14 border-t border-[#DED9CF]">
 
-                                @foreach ([['01', 'Pengembangan Mahasiswa', 'Ruang belajar dan pengembangan kemampuan mahasiswa.'], ['02', 'Aspirasi Mahasiswa', 'Menampung dan menyampaikan suara mahasiswa.'], ['03', 'Kolaborasi', 'Membangun kerja sama antar mahasiswa dan organisasi.'], ['04', 'Pengabdian', 'Menghadirkan kontribusi bagi lingkungan sekitar.']] as $program)
-                                    <article
+                                @forelse ($programEvents as $index => $program)
+                                    <a href="{{ url('/events/' . $program['slug']) }}"
                                         class="group grid gap-6 border-b border-[#DED9CF] py-8 transition hover:px-4 sm:grid-cols-[60px_1fr_30px] sm:items-center">
 
                                         <span class="text-sm font-black text-[#B91C1C]">
-                                            {{ $program[0] }}
+                                            {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                                         </span>
 
                                         <div>
 
-                                            <h3 class="text-xl font-black sm:text-2xl">
-                                                {{ $program[1] }}
+                                            <div class="flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">
+                                                <span>{{ $program['date'] }}</span>
+                                                <span class="text-gray-300">•</span>
+                                                <span>{{ $program['location'] }}</span>
+                                            </div>
+
+                                            <h3 class="mt-2 text-xl font-black group-hover:text-[#B91C1C] transition-colors sm:text-2xl">
+                                                {{ $program['title'] }}
                                             </h3>
 
                                             <p class="mt-2 max-w-xl text-sm leading-6 text-gray-500">
-                                                {{ $program[2] }}
+                                                {{ $program['description'] }}
                                             </p>
 
                                         </div>
@@ -618,10 +675,23 @@
                                             →
                                         </span>
 
-                                    </article>
-                                @endforeach
+                                    </a>
+                                @empty
+                                    <div class="border-b border-[#DED9CF] py-16 text-center">
+                                        <p class="text-sm font-semibold text-gray-500">Belum ada program kerja dipublikasikan</p>
+                                    </div>
+                                @endforelse
 
                             </div>
+
+                            @if ($programEvents->isNotEmpty())
+                                <div class="mt-8">
+                                    <a href="{{ url('/events') }}"
+                                        class="text-sm font-black text-[#B91C1C] underline decoration-[#F4C430] decoration-2 underline-offset-8">
+                                        Lihat semua kegiatan →
+                                    </a>
+                                </div>
+                            @endif
 
                         </div>
 
@@ -722,7 +792,7 @@
                                 </a>
                             @endforeach
                         </div>
-                    @else
+                    @elseif ($newsData->isEmpty())
                         <div class="mt-14 border border-dashed border-[#CEC8BC] bg-white py-16 text-center">
                             <p class="text-sm font-semibold text-gray-500">Belum ada berita yang dipublikasikan</p>
                         </div>
@@ -807,6 +877,8 @@
                 </div>
 
             </section>
+
+        </main>
 
             {{-- FOOTER --}}
             <footer class="bg-[#171717] text-white">
@@ -929,8 +1001,6 @@
                 </div>
 
             </footer>
-
-        </main>
 
     </div>
 
@@ -1057,6 +1127,10 @@
 
 
     <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
         @keyframes marquee {
 
             from {
