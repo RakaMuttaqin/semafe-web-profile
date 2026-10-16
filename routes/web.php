@@ -156,9 +156,15 @@ Route::middleware(['auth', 'role:operator,admin'])->group(function () {
  * ---------------------------------------------------------------------- */
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('role/remove/{id}', function ($id) {
-        \App\Models\Role::findOrFail($id)->delete();
+        $role = \App\Models\Role::withCount('users')->findOrFail($id);
 
-        return redirect()->back()->with('success', 'Peran berhasil dihapus.');
+        if ($role->users_count > 0) {
+            return redirect()->back()->with('error', 'Peran "' . $role->name . '" tidak dapat dihapus karena masih digunakan oleh ' . $role->users_count . ' pengguna.');
+        }
+
+        $role->delete();
+
+        return redirect()->back()->with('success', 'Peran "' . $role->name . '" berhasil dihapus.');
     })->name('role.remove');
 });
 

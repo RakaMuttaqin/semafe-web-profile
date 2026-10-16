@@ -68,9 +68,18 @@
                                 </td>
                                 <td class="py-4 text-right space-x-2">
                                     <button @click="selected = role; openEdit = true"
-                                        class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">Edit</button>
-                                    <button @click="selected = role; openDelete = true"
-                                        class="px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Hapus</button>
+                                        class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer">Edit</button>
+
+                                    <template x-if="(role.users ? role.users.length : 0) === 0">
+                                        <button @click="selected = role; openDelete = true"
+                                            class="px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer">Hapus</button>
+                                    </template>
+
+                                    <template x-if="(role.users ? role.users.length : 0) > 0">
+                                        <button type="button" disabled
+                                            title="Tidak dapat dihapus — masih digunakan pengguna"
+                                            class="px-3 py-1.5 text-xs text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">Hapus</button>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
