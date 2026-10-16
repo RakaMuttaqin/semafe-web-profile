@@ -70,6 +70,19 @@ Route::middleware(['auth', 'role:operator,admin'])->group(function () {
     Route::patch('division/update{id}', [DivisionController::class, 'update'])->name('division.update');
     Route::delete('division/delete{id}', [DivisionController::class, 'destroy'])->name('division.delete');
 
+    // Hapus divisi — hanya boleh bila tidak memiliki anggota
+    Route::delete('division/remove/{id}', function ($id) {
+        $division = \App\Models\Division::withCount('members')->findOrFail($id);
+
+        if ($division->members_count > 0) {
+            return redirect()->back()->with('error', 'Divisi "' . $division->name . '" tidak dapat dihapus karena masih memiliki ' . $division->members_count . ' anggota. Pindahkan anggotanya terlebih dahulu.');
+        }
+
+        $division->delete();
+
+        return redirect()->back()->with('success', 'Divisi "' . $division->name . '" berhasil dihapus.');
+    })->name('division.remove');
+
     // Member
     Route::get('member/', function () {
         $members = Member::with('divisions')->get();

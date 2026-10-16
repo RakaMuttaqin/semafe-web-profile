@@ -67,9 +67,20 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700"
                                         x-text="division.member_count + ' anggota'"></span>
                                 </td>
-                                <td class="py-4 text-right">
+                                <td class="py-4 text-right space-x-2">
                                     <button @click="selected = division; openEdit = true"
                                         class="px-3 py-1.5 text-xs text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer">Edit</button>
+
+                                    <template x-if="division.member_count === 0">
+                                        <button @click="selected = division; openDelete = true"
+                                            class="px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer">Hapus</button>
+                                    </template>
+
+                                    <template x-if="division.member_count > 0">
+                                        <button type="button" disabled
+                                            title="Tidak dapat dihapus — masih memiliki anggota"
+                                            class="px-3 py-1.5 text-xs text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">Hapus</button>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -139,8 +150,8 @@
                     </div>
 
                     <p class="rounded-lg bg-yellow-50 px-3 py-2 text-xs text-yellow-700">
-                        Divisi tidak dapat dihapus karena terhubung dengan data anggota. Kosongkan anggotanya terlebih
-                        dahulu bila dividi ini ingin dinonaktifkan.
+                        Divisi hanya dapat dihapus bila tidak memiliki anggota. Pindahkan anggotanya terlebih dahulu
+                        bila divisi ini ingin dihapus.
                     </p>
 
                     <div class="flex justify-end space-x-2 pt-2">
@@ -150,6 +161,27 @@
                             class="px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer">Simpan
                             Perubahan</button>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Modal Hapus --}}
+        <div x-show="openDelete" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            style="display:none" x-transition.opacity>
+            <div class="w-full max-w-sm p-6 bg-white rounded-xl shadow-lg" @click.away="openDelete = false">
+                <h3 class="mb-2 text-lg font-semibold text-gray-800">Hapus Divisi?</h3>
+                <p class="mb-4 text-sm text-gray-500">Divisi <span x-text="selected.name"
+                        class="font-medium text-red-600"></span> akan dihapus permanen.</p>
+
+                <form :action="'/division/remove/' + selected.id" method="POST" class="flex justify-end space-x-2">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="button" @click="openDelete = false"
+                        class="px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Hapus
+                        Permanen</button>
                 </form>
             </div>
         </div>
@@ -184,6 +216,7 @@
                 divisions: @json($divisions),
                 openInsert: false,
                 openEdit: false,
+                openDelete: false,
                 selected: {},
                 search: '',
 

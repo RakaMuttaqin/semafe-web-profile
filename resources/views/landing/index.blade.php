@@ -24,6 +24,22 @@
 
         $featuredNews = $newsData->first();
         $newsList = $newsData->skip(1);
+
+        $has = fn($table) => \Illuminate\Support\Facades\Schema::hasTable($table);
+        $stat = [
+            'members' => $has('members') ? App\Models\Member::count() : 0,
+            'divisions' => $has('divisions') ? App\Models\Division::count() : 0,
+            'events' => $has('events') ? App\Models\Events::where('status', 'published')->count() : 0,
+        ];
+
+        // Foto pengurus — pakai file bila ada, jika tidak pakai avatar
+        $kabinetPhoto = function ($file, $name) {
+            if ($file && file_exists(public_path('storage/foto/' . $file))) {
+                return asset('storage/foto/' . $file);
+            }
+
+            return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=1f2937&color=fff&size=600';
+        };
     @endphp
 
     <div x-data="semafeLanding()" class="min-h-screen bg-[#FFFDF7] text-[#171717]">
@@ -66,6 +82,16 @@
                             </button>
 
                         </template>
+
+                        <a href="{{ url('/news') }}"
+                            class="py-7 text-[13px] font-semibold text-gray-600 transition hover:text-[#B91C1C]">
+                            Berita
+                        </a>
+
+                        <a href="{{ url('/events') }}"
+                            class="py-7 text-[13px] font-semibold text-gray-600 transition hover:text-[#B91C1C]">
+                            Kegiatan
+                        </a>
 
                     </div>
 
@@ -119,6 +145,18 @@
                             </button>
 
                         </template>
+
+                        <a href="{{ url('/news') }}"
+                            class="flex w-full items-center justify-between py-4 text-left text-sm font-semibold">
+                            <span>Berita</span>
+                            <span class="text-[#B91C1C]">→</span>
+                        </a>
+
+                        <a href="{{ url('/events') }}"
+                            class="flex w-full items-center justify-between py-4 text-left text-sm font-semibold">
+                            <span>Kegiatan</span>
+                            <span class="text-[#B91C1C]">→</span>
+                        </a>
 
                     </div>
 
@@ -174,35 +212,35 @@
                                     →
                                 </span>
                             </button>
-                            <button @click="scrollTo('berita')"
+                            <a href="{{ url('/events') }}"
                                 class="text-sm font-bold text-[#171717] underline decoration-[#F4C430] decoration-2 underline-offset-8">
                                 Lihat kegiatan
-                            </button>
+                            </a>
                         </div>
                         {{-- Small information --}}
                         <div class="mt-16 grid max-w-md grid-cols-3 border-t border-[#DED9CF] pt-6">
                             <div>
                                 <p class="text-2xl font-black">
-                                    01
+                                    {{ str_pad($stat['members'], 2, '0', STR_PAD_LEFT) }}
                                 </p>
                                 <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                                    Kabinet
+                                    Anggota
                                 </p>
                             </div>
                             <div class="border-l border-[#DED9CF] pl-5">
                                 <p class="text-2xl font-black">
-                                    08
+                                    {{ str_pad($stat['divisions'], 2, '0', STR_PAD_LEFT) }}
                                 </p>
                                 <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                                    Departemen
+                                    Divisi
                                 </p>
                             </div>
                             <div class="border-l border-[#DED9CF] pl-5">
                                 <p class="text-2xl font-black">
-                                    20+
+                                    {{ str_pad($stat['events'], 2, '0', STR_PAD_LEFT) }}
                                 </p>
                                 <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                                    Program
+                                    Kegiatan
                                 </p>
                             </div>
                         </div>
@@ -447,7 +485,7 @@
 
                                     <div class="aspect-4/5 overflow-hidden bg-[#242424]">
 
-                                        <img src="{{ asset('storage/foto/' . 'KETUA.jpg') }}" alt="Ketua Umum"
+                                        <img src="{{ $kabinetPhoto('KETUA.jpg', 'M Gilar Ramadhan') }}" alt="Ketua Umum"
                                             class="h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0">
 
                                     </div>
@@ -470,7 +508,7 @@
                                 {{-- Wakil --}}
                                 <article class="group">
                                     <div class="aspect-4/5 overflow-hidden bg-[#242424]">
-                                        <img src="{{ asset('storage/foto/' . 'WAKETU.jpg') }}" alt="Wakil Ketua"
+                                        <img src="{{ $kabinetPhoto('WAKETU.jpg', 'Abdul Latief') }}" alt="Wakil Ketua"
                                             class="h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0">
                                     </div>
                                     <div class="border-b border-white/10 py-5">
@@ -725,11 +763,47 @@
                     </p>
 
 
-                    <button
+                    <button @click="openAspirasi = true"
                         class="mt-9 bg-white px-8 py-4 text-sm font-black text-[#B91C1C] transition hover:bg-[#FFFDF7]">
                         Sampaikan Aspirasi →
                     </button>
 
+                </div>
+
+                {{-- Modal Aspirasi --}}
+                <div x-show="openAspirasi" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+                    style="display:none" x-transition.opacity>
+                    <div class="w-full max-w-lg bg-white p-8" @click.away="openAspirasi = false">
+                        <h3 class="text-2xl font-black text-[#171717]">Sampaikan aspirasimu</h3>
+                        <p class="mt-2 text-sm leading-6 text-gray-500">
+                            Kritik, ide, atau masukanmu akan dikirim ke email resmi SEMAFE.
+                        </p>
+
+                        <form class="mt-6 space-y-4"
+                            @submit.prevent="sendAspirasi($event)">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama (opsional)</label>
+                                <input type="text" x-model="aspirasi.nama" placeholder="Nama atau anonim"
+                                    class="w-full border border-[#DED9CF] px-3 py-2.5 text-sm focus:border-[#B91C1C] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Aspirasi</label>
+                                <textarea x-model="aspirasi.pesan" rows="5" required
+                                    placeholder="Tulis aspirasimu di sini..."
+                                    class="w-full border border-[#DED9CF] px-3 py-2.5 text-sm focus:border-[#B91C1C] focus:outline-none"></textarea>
+                            </div>
+                            <div class="flex justify-end gap-3">
+                                <button type="button" @click="openAspirasi = false"
+                                    class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition">
+                                    Batal
+                                </button>
+                                <button type="submit"
+                                    class="bg-[#B91C1C] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#991B1B]">
+                                    Kirim Aspirasi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
             </section>
@@ -803,6 +877,10 @@
                                     Berita
                                 </button>
 
+                                <a href="{{ url('/events') }}" class="block hover:text-white">
+                                    Kegiatan
+                                </a>
+
                             </div>
 
                         </div>
@@ -866,6 +944,27 @@
                     mobileMenu: false,
 
                     activeSection: 'home',
+
+                    openAspirasi: false,
+
+                    aspirasi: {
+                        nama: '',
+                        pesan: ''
+                    },
+
+                    sendAspirasi(event) {
+                        const pengirim = this.aspirasi.nama ? this.aspirasi.nama : 'Anonim';
+                        const subject = encodeURIComponent('Aspirasi Mahasiswa - ' + pengirim);
+                        const body = encodeURIComponent(this.aspirasi.pesan + '\n\n— ' + pengirim);
+
+                        window.location.href = 'mailto:semafeunpi25@gmail.com?subject=' + subject + '&body=' + body;
+
+                        this.openAspirasi = false;
+                        this.aspirasi = {
+                            nama: '',
+                            pesan: ''
+                        };
+                    },
 
                     navigation: [
                         ['home', 'Beranda'],
